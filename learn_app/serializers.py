@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
-from .models import QuestionCard, UserProfile, Category, Question
+from .models import QuestionCard, UserProfile, Category, Question, Answer
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -8,10 +8,10 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = '__all__'
 
-class UserProfileSerializer(serializers.ModelSerializer):
+class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = UserProfile
-        fields = '__all__'
+        fields = ['id', 'first_name', 'last_name', 'experience', 'credits', 'prestige', 'user_id' ]
 
 
 class GroupSerializer(serializers.HyperlinkedModelSerializer):
@@ -32,4 +32,9 @@ class QuestionCardSerializer(serializers.HyperlinkedModelSerializer):
 class QuestionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Question
-        fields = ['id', 'content', 'choice_one', 'choice_two', 'choice_three', 'choice_four', 'answer']
+        fields = ['id', 'content', 'choice_one', 'choice_two', 'choice_three', 'choice_four', 'correct_answer']
+
+class AnswerSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Answer
+        fields = ['id', 'user_answer', 'question_id', 'user_id']

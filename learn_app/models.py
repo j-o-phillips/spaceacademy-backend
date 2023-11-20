@@ -11,7 +11,15 @@ class UserProfile(models.Model):
     prestige = models.IntegerField()
 
     def __str__(self):
-        return self.first_name
+        return self.user.username
+    
+    def update_credits(self, amount):
+        self.credits += amount
+        return self.credits
+    
+    def update_experience(self, amount):
+        self.experience += amount
+        return self.experience
     
 class Planet(models.Model):
     name = models.CharField(max_length=100)
@@ -45,9 +53,20 @@ class Question(models.Model):
     choice_two = models.CharField(max_length=300)
     choice_three = models.CharField(max_length=300)
     choice_four = models.CharField(max_length=300)
-    answer = models.CharField(max_length=300)
+    correct_answer = models.CharField(max_length=300)
 
+    def __str__(self):
+        return self.content
     
+
+class Answer(models.Model):
+     user = models.ForeignKey(User, on_delete=models.CASCADE)
+     question = models.ForeignKey(Question, on_delete=models.CASCADE)
+
+     user_answer = models.CharField(max_length=200)
+
+     def __str__(self):
+        return self.user_answer
 
 
 

@@ -1,13 +1,13 @@
 from django.contrib.auth.models import User, Group 
 from rest_framework import viewsets, permissions, generics
-from .serializers import UserSerializer, GroupSerializer, QuestionCardSerializer, UserProfileSerializer, CategoryCardSerializer, QuestionSerializer
+from .serializers import UserSerializer, GroupSerializer, QuestionCardSerializer, UserProfileSerializer, CategoryCardSerializer, QuestionSerializer, AnswerSerializer
 from django.http import HttpResponse, JsonResponse
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.authentication import TokenAuthentication
 from django.contrib.auth import authenticate, logout
-from .models import QuestionCard, UserProfile, Category, Planet, Question
+from .models import QuestionCard, UserProfile, Category, Planet, Question, Answer
 from rest_framework.authtoken.views import ObtainAuthToken
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -145,3 +145,59 @@ class QuestionView(APIView):
 
         return JsonResponse({'data': data.data })
 
+class AnswerView(APIView):
+    #initial user answer
+    def post(self, request, pk, question_card_id, question_id):
+        user = self.request.user
+        data = self.request.data
+        choice = data['choice']
+        print(choice)
+        #get correct question
+        question = Question.objects.get(id=question_id)
+        #check if user has already answered this question
+        answer_present = Answer.objects.get(id=question_id, user=user)
+        if answer_present:
+            return JsonResponse({'error': 'Answer already given'})
+        else:
+        #Save it to db
+            answer = Answer.objects.create(user=user, question=question, user_answer=choice)
+            answer.save()
+            return JsonResponse({'success': 'Answer posted'})
+
+ 
+class checkCardAnswers(APIView):       
+    def get(self, request, pk, question_card_id, format=None):
+        user = self.request.user
+        user = User.objects.get(id=user.id)
+
+        #get all questions from question card
+        question_card = QuestionCard.objects.get(id=question_card_id)
+        questions = question_card.question_set.all()
+
+        #for each question check if the user answer matches the correct answer
+        reward_divider = 1
+        try:
+            for question in questions:
+                
+                userAnswer = Answer.objects.filter(user=user).get(question=question.id)
+                if userAnswer:
+                    print(question.correct_answer)
+                    print(userAnswer)
+                    if str(question.correct_answer) == str(userAnswer):
+                        print('correct')
+                    else:
+                        reward_divider += 1
+        except:
+            return JsonResponse({'message': 'Answer all the questions'})
+
+        #add credits and exp to profile
+        profile = UserProfile.objects.get(user=user)
+        credits_to_add = question_card.reward_credits / reward_divider
+        profile.update_credits(credits_to_add)
+        profile.update_experience(question_card.reward_exp)
+        # profile.save()
+     
+        return JsonResponse({'reward divider': reward_divider,
+                              'reward_experience' : question_card.reward_exp,
+                              'reward_credits' : credits_to_add
+                              })
