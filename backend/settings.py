@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
 
-    'learn_app'
+    'learn_app',
+    'game_app'
 ]
 
 MIDDLEWARE = [

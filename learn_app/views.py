@@ -7,8 +7,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.authentication import TokenAuthentication
 from django.contrib.auth import authenticate, logout
-from .models import QuestionCard, UserProfile, Category, Planet, Question, Answer
+from .models import QuestionCard, UserProfile, Category, Planet, Question, Answer, LockedCards
 from rest_framework.authtoken.views import ObtainAuthToken
+from game_app.models import Ship, Weapons, Thrusters, Shields, Engines
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('-date_joined')
@@ -46,7 +47,14 @@ class SignupView(APIView):
                     print(user.id)
                     user_profile = UserProfile(user=user, first_name='', last_name='', experience=0, credits=0, prestige=0)
                     user_profile.save()
-
+                    #assign ship
+                    engines = Engines.objects.get(id=1)
+                    shields = Shields.objects.get(id=1)
+                    weapons = Weapons.objects.get(id=1)
+                    thrusters = Thrusters.objects.get(id=1)
+                    
+                    ship = Ship(user_profile=user_profile, name='Sirius', weapons=weapons, engines=engines, thrusters=thrusters, shields=shields)
+                    ship.save()
                     return JsonResponse({'success': 'User created succesfully'})
         else:
             return JsonResponse({'error': 'Passwords do not match'})
@@ -69,14 +77,6 @@ class UserLoginView(ObtainAuthToken):
         else:
             return Response({'error': 'Invalid credentials'}, status=401)
         
-# class CheckAuthenticatedView(APIView):
-#     def get(self, request, format=None):
-#         isAuthenticated = User.is_authenticated
-
-#         if isAuthenticated:
-#             return JsonResponse({ 'isAuthenticated': 'success'})
-#         else:
-#             return JsonResponse({'isAuthenticated': 'error'})
         
 class UserLogoutView(APIView):
     def post(self, request):
@@ -129,10 +129,19 @@ class CategoryView(generics.ListAPIView):
 
 class QuestionCardView(APIView):
     def get(self, request, pk, format=None):
-        data = QuestionCard.objects.filter(category_id=pk)
-        print(data)
+        user = self.request.user
+        user = User.objects.get(id=user.id)
 
-        data = QuestionCardSerializer(data, many=True)
+        cards_in_category = QuestionCard.objects.filter(category_id=pk)
+        print(cards_in_category)
+
+        unlocked_cards = cards_in_category.exclude(
+            id__in=LockedCards.objects.filter(user_id=user.id).values('question_card_id')
+        )
+
+        print(unlocked_cards)
+
+        data = QuestionCardSerializer(unlocked_cards, many=True)
 
         return JsonResponse({'data': data.data })
         
@@ -151,18 +160,23 @@ class AnswerView(APIView):
         user = self.request.user
         data = self.request.data
         choice = data['choice']
-        print(choice)
+
         #get correct question
         question = Question.objects.get(id=question_id)
         #check if user has already answered this question
-        answer_present = Answer.objects.get(id=question_id, user=user)
-        if answer_present:
-            return JsonResponse({'error': 'Answer already given'})
-        else:
-        #Save it to db
+        try:
+            answer_present = Answer.objects.get(question_id=question_id, user=user) 
+        
+            return JsonResponse({'message': 'Answer already given'})
+        except:
+            #Save it to db
             answer = Answer.objects.create(user=user, question=question, user_answer=choice)
             answer.save()
-            return JsonResponse({'success': 'Answer posted'})
+            #check if answer is correct
+            if str(question.correct_answer) == str(choice):
+                return JsonResponse({'message': 'correct'})
+            else:
+                return JsonResponse({'message': 'incorrect'})
 
  
 class checkCardAnswers(APIView):       
@@ -195,7 +209,10 @@ class checkCardAnswers(APIView):
         credits_to_add = question_card.reward_credits / reward_divider
         profile.update_credits(credits_to_add)
         profile.update_experience(question_card.reward_exp)
-        # profile.save()
+        profile.save()
+        #update locked cards
+        new_locked_card = LockedCards.objects.create(user=user, question_card=question_card)
+        new_locked_card.save()
      
         return JsonResponse({'reward divider': reward_divider,
                               'reward_experience' : question_card.reward_exp,
