@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Ship, Engines, Weapons, Shields, Thrusters
+from .models import Ship, Engines, Weapons, Shields, Thrusters, Hangar, Comment, Post
 
 class ShipSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -26,3 +26,17 @@ class ShieldsSerializer(serializers.HyperlinkedModelSerializer):
         model = Shields
         fields = ['id', 'name', 'power', 'level']
 
+class HangarSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Hangar
+        fields = ['id', 'name']
+
+class PostSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Post
+        fields = ['id', 'title', 'author', 'content', 'profile_id', 'hangar_id']
+
+class CommentSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ['id', 'author', 'content', 'post_id']

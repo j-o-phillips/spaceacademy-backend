@@ -44,8 +44,8 @@ class SignupView(APIView):
                     user.save()
 
                     user = User.objects.get(id=user.id)
-                    print(user.id)
-                    user_profile = UserProfile(user=user, first_name='', last_name='', experience=0, credits=0, prestige=0)
+                    print(user.username)
+                    user_profile = UserProfile(user=user, username=user.username, first_name='', last_name='', experience=0, credits=0, prestige=0)
                     user_profile.save()
                     #assign ship
                     engines = Engines.objects.get(id=1)
