@@ -121,4 +121,13 @@ class PostView(APIView):
         Post.objects.create(title=title, author=user.username, content=content, profile_id=user_profile.id, hangar_id=hangar_id )
 
         return JsonResponse({ 'message': 'post created'})
-
+    
+class DeletePostView(APIView):
+    def delete(self, request, post_id, format=None):
+        print(post_id)
+        try:
+            post = Post.objects.get(id=post_id)
+            post.delete()
+            return JsonResponse({ 'message': 'post deleted'})
+        except:
+            return JsonResponse({'error': 'an error in deletion occurred'})
