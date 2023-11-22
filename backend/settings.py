@@ -34,7 +34,10 @@ SECRET_KEY = 'django-insecure-!xm*b+g!isyfnk)%la_u_anu4f-r&j-v6iaympu=gchp2&-e8$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'spaceacademy-backend-production.up.railway.app',
+    'spaceacademy-backend.railway.internal'
+]
 
 CORS_ALLOWED_ORIGINS = ['http://localhost:5173']
 
