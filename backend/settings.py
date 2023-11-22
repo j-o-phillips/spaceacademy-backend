@@ -36,11 +36,16 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'spaceacademy-backend-production.up.railway.app',
-    'spaceacademy-backend.railway.internal'
+    'spaceacademy-backend.railway.internal',
+    '127.0.0.1',
+    'localhost'
 ]
 
 
-CORS_ALLOWED_ORIGINS = ['spaceacademy-frontend-production.up.railway.app']
+CORS_ALLOWED_ORIGINS = [
+    'https://spaceacademy-frontend-production.up.railway.app',
+    'http://localhost:5173'
+                        ]
 
 # Application definition
 
@@ -68,6 +73,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://*spaceacademy-backend-production.up.railway.app',
+    'https://*.railway.app/'
 ]
 
 ROOT_URLCONF = 'backend.urls'
