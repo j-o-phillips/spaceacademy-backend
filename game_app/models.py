@@ -6,23 +6,27 @@ class Weapons(models.Model):
      name = models.CharField( max_length=100)
      damage = models.IntegerField()
      level = models.IntegerField()
+     price = models.IntegerField( default=0)
 
 
 class Engines(models.Model):
      name = models.CharField( max_length=100)
      speed = models.IntegerField()
      level = models.IntegerField()
+     price = models.IntegerField(default=0)
 
 class Thrusters(models.Model):
      name = models.CharField( max_length=100)
      thrust = models.IntegerField()
      level = models.IntegerField()
+     price = models.IntegerField(default=0)
 
 
 class Shields(models.Model):
      name = models.CharField( max_length=100)
      power = models.IntegerField()
      level = models.IntegerField()
+     price = models.IntegerField(default=0)
      
 
 class Ship(models.Model):
