@@ -9,22 +9,22 @@ class ShipSerializer(serializers.HyperlinkedModelSerializer):
 class WeaponsSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Weapons
-        fields = ['id', 'name', 'damage', 'level']
+        fields = ['id', 'name', 'damage', 'level', 'price']
 
 class EnginesSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Engines
-        fields = ['id', 'name', 'speed', 'level']
+        fields = ['id', 'name', 'speed', 'level', 'price']
 
 class ThrustersSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Thrusters
-        fields = ['id', 'name', 'thrust', 'level']
+        fields = ['id', 'name', 'thrust', 'level', 'price']
 
 class ShieldsSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Shields
-        fields = ['id', 'name', 'power', 'level']
+        fields = ['id', 'name', 'power', 'level', 'price']
 
 class HangarSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

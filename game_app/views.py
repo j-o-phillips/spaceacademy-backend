@@ -131,3 +131,95 @@ class DeletePostView(APIView):
             return JsonResponse({ 'message': 'post deleted'})
         except:
             return JsonResponse({'error': 'an error in deletion occurred'})
+
+class ThrusterView(APIView):
+    def post(self, request, format=None):
+        user = self.request.user
+        user = User.objects.get(id=user.id)
+        user_profile = UserProfile.objects.get(user=user)
+
+        data = self.request.data
+        price = data['price']
+        
+        ship = Ship.objects.get(user_profile=user_profile)
+        
+        #deduct price from profile
+        user_profile.credits -= int(price)
+        user_profile.save()
+
+        #set new equip
+        new_id = ship.thrusters.id + 1
+        new_thrusters = Thrusters.objects.get(id=new_id)
+        ship.thrusters = new_thrusters
+        ship.save()
+
+        return JsonResponse({'message': 'thrusters upgraded'})
+    
+class WeaponView(APIView):
+    def post(self, request, format=None):
+        user = self.request.user
+        user = User.objects.get(id=user.id)
+        user_profile = UserProfile.objects.get(user=user)
+
+        data = self.request.data
+        price = data['price']
+        
+        ship = Ship.objects.get(user_profile=user_profile)
+        
+        #deduct price from profile
+        user_profile.credits -= int(price)
+        user_profile.save()
+
+        #set new equip
+        new_id = ship.weapons.id + 1
+        new_weapons = Weapons.objects.get(id=new_id)
+        ship.weapons = new_weapons
+        ship.save()
+
+        return JsonResponse({'message': 'weapons upgraded'})
+    
+class ShieldView(APIView):
+    def post(self, request, format=None):
+        user = self.request.user
+        user = User.objects.get(id=user.id)
+        user_profile = UserProfile.objects.get(user=user)
+
+        data = self.request.data
+        price = data['price']
+        
+        ship = Ship.objects.get(user_profile=user_profile)
+        
+        #deduct price from profile
+        user_profile.credits -= int(price)
+        user_profile.save()
+
+        #set new equip
+        new_id = ship.shields.id + 1
+        new_shields = Shields.objects.get(id=new_id)
+        ship.shields = new_shields
+        ship.save()
+
+        return JsonResponse({'message': 'shields upgraded'})
+    
+class EngineView(APIView):
+    def post(self, request, format=None):
+        user = self.request.user
+        user = User.objects.get(id=user.id)
+        user_profile = UserProfile.objects.get(user=user)
+
+        data = self.request.data
+        price = data['price']
+        
+        ship = Ship.objects.get(user_profile=user_profile)
+        
+        #deduct price from profile
+        user_profile.credits -= int(price)
+        user_profile.save()
+
+        #set new equip
+        new_id = ship.engines.id + 1
+        new_engines = Engines.objects.get(id=new_id)
+        ship.engines = new_engines
+        ship.save()
+
+        return JsonResponse({'message': 'engines upgraded'})
