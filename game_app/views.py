@@ -78,7 +78,9 @@ class HangarDetailView(APIView):
         except:
             #not a member
             hangar.profile.add(user_profile)
-            return JsonResponse({ 'message': 'user joined'})
+            members = hangar.profile.all()
+            members = UserProfileSerializer(members, many=True)
+            return JsonResponse({ 'data': members.data})
         
     #leave hangar
     def put(self, request, hangar_id, format=None):
@@ -92,7 +94,10 @@ class HangarDetailView(APIView):
             # a member
             member = hangar.profile.get(id=user_profile.id)
             hangar.profile.remove(member)
-            return JsonResponse({ 'message': 'user left'})
+            members = hangar.profile.all()
+            members = UserProfileSerializer(members, many=True)
+            return JsonResponse({ 'data': members.data})
+            
         except:
             #not a member
             return JsonResponse({ 'message': 'not a member'})
