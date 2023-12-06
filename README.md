@@ -138,6 +138,8 @@ To incorporate my knowledge of Three.js and React Three Fiber
 
 I wanted to create something slightly different from a traditional CRUD app, so i decided to make a gamified learning platform with the goal of incentivising children and young adults to learn. Users would answer questions on a variety of topics, receiving rewards for correct answers which could be used to gain other perks. I was taking a course in three.js alongside the GA course so I also wanted to incorporate this knowledge, and I knew I could make a simple model of a solar system with clickable planets etc, so I decided on a Sci-Fi theme. I made an ERD which is included below, and decided to split the project into two Django apps, one for the learning part and the other for the game.
 
+[![ERD Screen Shot][erd-screenshot]]
+
 One of the decisions I had to make was who would provide the questions. On the one hand, I could make it so all users could post questions for other users. This allows for a huge and ever growing variety of questions, but makes it very difficult to moderate and make the game fair. On the other hand, I as the developer could write all the questions and be sure they give fair rewards, but this is a lot of extra work and limits the growth of the app. In the end I decided to take the latter option, with plans for the future to incorporate another type of user (moderators), who would be trusted individuals who would both update the questions and ensure the rewards were fair.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -154,6 +156,46 @@ To begin the project I made a number of decisions. I decided to use Django’s t
 
 The first task was implementing Django’s token based auth system. This went smoothly, but I soon realised that I needed to expand the default user model, so I made some additions that automatically assigned a custom user profile model to each user on registration. I also wrote a view to serve up this profile to the frontend when logging in.
 
+```js
+class SignupView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request, format=None):
+        data = self.request.data
+
+        username = data['username']
+        password = data['password']
+        re_password = data['re_password']
+
+        if password == re_password:
+            if User.objects.filter(username=username).exists():
+                return JsonResponse({'error': 'Username already exists'})
+            else:
+                if len(password) < 6:
+                    return JsonResponse({'error': 'Password must be atleas 6 characters'})
+                else:
+                    user = User.objects.create_user(username=username, password=password)
+                    user.save()
+
+                    user = User.objects.get(id=user.id)
+                    print(user.username)
+                    user_profile = UserProfile(user=user, username=user.username, first_name='', last_name='', experience=0, credits=0, prestige=0)
+                    user_profile.save()
+                    #assign ship
+                    engines = Engines.objects.get(id=1)
+                    shields = Shields.objects.get(id=1)
+                    weapons = Weapons.objects.get(id=1)
+                    thrusters = Thrusters.objects.get(id=1)
+
+                    ship = Ship(user_profile=user_profile, name='Sirius', weapons=weapons, engines=engines, thrusters=thrusters, shields=shields)
+                    ship.save()
+                    return JsonResponse({'success': 'User created succesfully'})
+        else:
+            return JsonResponse({'error': 'Passwords do not match'})
+```
+
+The view to assign a custom user profile to each user
+
 ### Planets and Data Cards
 
 The next task was to write routes and views for the 7 planned planets(subjects), returning their connected categories, question cards and questions. I also used react-router to switch between these pages and fetch the data on page-load. In all honesty, I tried to make my Django views as concise as I could, but I feel like there are so many possibilities in Django that there is almost certainly a better way of writing these views (They were mostly class based APIViews, as opposed to the viewsets that have a lot more functionality built in). At this point, even though I wasn’t completely finished with the backend I wanted to build out my UI a bit more.
@@ -164,7 +206,51 @@ I first built simple login and sign up pages and connected them up to the backen
 
 ### Logic
 
-I still hadn’t written the backend logic for submitting the user’s individual answers, checking those answers against the correct answers in the database, and then again checking all the answers and calculating the reward when the user submits all their answers to unlock the data card. This involved writing a number of new views with checking logic on both the frontend and backend. [CODE]
+I still hadn’t written the backend logic for submitting the user’s individual answers, checking those answers against the correct answers in the database, and then again checking all the answers and calculating the reward when the user submits all their answers to unlock the data card. This involved writing a number of new views with checking logic on both the frontend and backend.
+
+```js
+class checkCardAnswers(APIView):
+    def get(self, request, pk, question_card_id, format=None):
+        user = self.request.user
+        user = User.objects.get(id=user.id)
+
+        #get all questions from question card
+        question_card = QuestionCard.objects.get(id=question_card_id)
+        questions = question_card.question_set.all()
+
+        #for each question check if the user answer matches the correct answer
+        reward_divider = 1
+        try:
+            for question in questions:
+
+                userAnswer = Answer.objects.filter(user=user).get(question=question.id)
+                if userAnswer:
+                    print(question.correct_answer)
+                    print(userAnswer)
+                    if str(question.correct_answer) == str(userAnswer):
+                        print('correct')
+                    else:
+                        reward_divider += 1
+        except:
+            return JsonResponse({'message': 'Answer all the questions'})
+
+        #add credits and exp to profile
+        profile = UserProfile.objects.get(user=user)
+        credits_to_add = question_card.reward_credits / reward_divider
+        profile.update_credits(credits_to_add)
+        profile.update_experience(question_card.reward_exp)
+        profile.save()
+        #update locked cards
+        new_locked_card = LockedCards.objects.create(user=user, question_card=question_card)
+        new_locked_card.save()
+
+        return JsonResponse({'reward divider': reward_divider,
+                              'reward_experience' : question_card.reward_exp,
+                              'reward_credits' : credits_to_add
+                              })
+```
+
+The view for checking a user's answers and updating their profile
 
 ### User Profile
 
@@ -261,6 +347,7 @@ Project Link: [https://github.com/github_username/repo_name](https://github.com/
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/linkedin_username
 [product-screenshot]: assets/readme/Display.png
+[erd-screenshot]: assets/readme/erd.png
 [Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
 [Next-url]: https://nextjs.org/
 [React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
