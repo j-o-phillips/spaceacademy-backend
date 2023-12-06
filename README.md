@@ -27,7 +27,6 @@
     <br />
     <a href="https://spaceacademy-frontend-production.up.railway.app/">View Live Site</a>
 
-
   </p>
 </div>
 
@@ -69,7 +68,7 @@
 Timeframe: 1 week
 Team: Solo
 
-This was fourth and final project of my General Assembly SEI course. The requirements were to use a **Django/python** backend with a **PostgreSQL** database, along with a **React** frontend. Being interested in ed-tech, I wanted my project to fall within this area.
+This was fourth and final project of my General Assembly SEI course. The requirements were to use a **Django/python** backend with a **PostgreSQL** database, along with a **React** frontend. Being interested in ed-tech, I wanted my project to fall within this area. The final project is a gamified learning platform for children ages 8-16. Players explore planets, answer questions on various topics and use the rewards for those questions to upgrade their ship.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -88,12 +87,7 @@ This was fourth and final project of my General Assembly SEI course. The require
 
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
-
 ### Prerequisites
-
-This is an example of how to list things you need to use the software and how to install them.
 
 - npm
   ```sh
