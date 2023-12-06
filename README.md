@@ -25,9 +25,8 @@
     GA SEI Project 4
     <br />
     <br />
-    <a href="https://github.com/jake-o-phillips/spaceacademy-backend">View Live Site</a>
-    ·
-    <a href="https://github.com/jake-o-phillips/spaceacademy-backend/issues">Report Bug</a>
+    <a href="https://spaceacademy-frontend-production.up.railway.app/">View Live Site</a>
+
 
   </p>
 </div>
