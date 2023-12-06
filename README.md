@@ -11,11 +11,12 @@
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
 
-[![Contributors][contributors-shield]][contributors-url]
+<!-- [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
+[![MIT License][license-shield]][license-url] -->
+
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
 <div align="center">
@@ -317,7 +318,7 @@ These were my key takeaways for this project:
 
 ## License
 
-Distributed under the MIT License. See `LICENSE.txt` for more information.
+Distributed under the MIT License.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -327,7 +328,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 Jake Phillips - jphillips@gmail.com
 
-Project Link: [https://github.com/jake-o-phillips/spaceacademy-backend](https://github.com/jake-o-phillips/spaceacademy-backend)
+Portfolio Link: [Portfolio](https://github.com/jake-o-phillips/spaceacademy-backend)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
